@@ -7,38 +7,10 @@
 # Inspired by dracula/tmux, catppucin/tmux & challenger-deep-theme/tmux
 #
 #
-export TMUX_ROSEPINE_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)"
+export PLUGIN_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
-get_tmux_option() {
-    local option value default
-    option="$1"
-    default="$2"
-    value="$(tmux show-option -gqv "$option")"
-
-    if [ -n "$value" ]; then
-        echo "$value"
-    else
-        echo "$default"
-    fi
-}
-
-set() {
-    local option=$1
-    local value=$2
-    tmux_commands+=(set-option -gq "$option" "$value" ";")
-}
-
-setw() {
-    local option=$1
-    local value=$2
-    tmux_commands+=(set-window-option -gq "$option" "$value" ";")
-}
-
-unset_option() {
-    local option=$1
-    local value=$2
-    tmux_commands+=(set-option -gu "$option" ";")
-}
+# import
+source "${PLUGIN_DIR}/utils/tmux_utils.sh"
 
 
 main() {
@@ -282,25 +254,25 @@ main() {
     readonly show_window=" #[fg=$thm_subtle]$current_window_icon #[fg=$thm_rose]#W$spacer"
 
     local show_window_in_window_status
-    show_window_in_window_status="#[fg=$thm_iris]#I#[fg=$thm_iris,]$left_separator#[fg=$thm_iris]#W"
+    show_window_in_window_status="#[fg=$thm_iris]#I$right_separator#[fg=$thm_subtle, bg=$bar_bg_disabled_color_option]#W"
 
     local show_window_in_window_status_current
-    show_window_in_window_status_current="#I#[fg=$thm_gold,bg=""]$left_separator#[fg=$thm_gold,bg=""]#W"
+    show_window_in_window_status_current="#I#[fg=$thm_gold,bg=""]$right_separator#[fg=$thm_text,bg=$bar_bg_disabled_color_option]#W"
 
     local show_session
-    readonly show_session=" #[fg=#{?client_prefix,$thm_love,$thm_text}]$current_session_icon #[fg=$thm_text]#S "
+    readonly show_session=" #[fg=#{?client_prefix,$thm_love,$thm_text}]$current_session_icon #[fg=$thm_foam]#S$field_separator"
 
     local show_user
-    readonly show_user="#[fg=$thm_iris]#(whoami)#[fg=$thm_subtle]$right_separator#[fg=$thm_subtle]$username_icon"
+    readonly show_user="#[fg=$thm_subtle]$username_icon #[fg=$thm_iris]#(whoami)#[fg=$thm_subtle]$field_separator"
 
     local show_host
-    readonly show_host="$spacer#[fg=$thm_text]#H#[fg=$thm_subtle]$right_separator#[fg=$thm_subtle]$hostname_icon"
+    readonly show_host="#[fg=$thm_subtle]$hostname_icon $spacer#[fg=$thm_text]#H#[fg=$thm_subtle]$field_separator"
 
     local show_date_time
-    readonly show_date_time=" #[fg=$thm_foam]$date_time#[fg=$thm_subtle]$right_separator#[fg=$thm_subtle]$date_time_icon "
+    readonly show_date_time="#[fg=$thm_subtle]$date_time_icon #[fg=$thm_foam]$date_time#[fg=$thm_subtle]$field_separator"
 
     local show_directory
-    readonly show_directory="$spacer#[fg=$thm_subtle]$current_folder_icon #[fg=$thm_rose]#{b:pane_current_path} "
+    readonly show_directory="#[fg=$thm_subtle]$current_folder_icon #[fg=$thm_rose]#{b:pane_current_path} "
 
     local show_directory_in_window_status
     # BUG: It doesn't let the user pass through a custom window name
@@ -342,8 +314,8 @@ main() {
     # TEST: This needs to be tested further
     if [[ "$bar_bg_disable" == "on" ]]; then
         set status-style "fg=$thm_pine,bg=$bar_bg_disabled_color_option"
-        show_window_in_window_status="#[fg=$thm_iris,bg=$bar_bg_disabled_color_option]#I#[fg=$thm_iris,bg=$bar_bg_disabled_color_option]$left_separator#[fg=$thm_iris,bg=$bar_bg_disabled_color_option]#W"
-        show_window_in_window_status_current="#[fg=$thm_gold,bg=$bar_bg_disabled_color_option]#I#[fg=$thm_gold,bg=$bar_bg_disabled_color_option]$left_separator#[fg=$thm_gold,bg=$bar_bg_disabled_color_option]#W"
+        show_window_in_window_status="#[fg=$thm_iris,bg=$bar_bg_disabled_color_option]#I$right_separator#[fg=$thm_subtle,bg=$bar_bg_disabled_color_option]#W"
+        show_window_in_window_status_current="#[fg=$thm_gold,bg=$bar_bg_disabled_color_option]#I$right_separator#[fg=$thm_text,bg=$bar_bg_disabled_color_option]#W"
         show_directory_in_window_status="#[fg=$thm_iris,bg=$bar_bg_disabled_color_option]#I#[fg=$thm_iris,bg=$bar_bg_disabled_color_option]$left_separator#[fg=$thm_iris,bg=$bar_bg_disabled_color_option]#{b:pane_current_path}"
         show_directory_in_window_status_current="#[fg=$thm_gold,bg=$bar_bg_disabled_color_option]#I#[fg=$thm_gold,bg=$bar_bg_disabled_color_option]$left_separator#[fg=$thm_gold,bg=$bar_bg_disabled_color_option]#{b:pane_current_path}"
         set window-status-style "fg=$thm_iris,bg=$bar_bg_disabled_color_option"
